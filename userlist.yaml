@@ -1,0 +1,22 @@
+plugins:
+  - name 'Update.esm'
+    after: ['Skyrim.esm']
+
+  - name 'Dawnguard.esm'
+        after: ['Update.esm']
+
+  - name 'HearthFires.esm'
+        after: ['Dawnguard.esm']
+
+  - name 'Dragonborn.esm'
+        after: ['HearthFires.esm']
+
+  - name 'Lanterns Of Skyrim II.esm'
+        after: ['Dragonborn.esm']
+
+  - name 'LegacyoftheDragonborn.esm'
+        after: ['Lanterns Of Skyrim II.esm']
+
+  - name 'DynDOLOD.esm'
+        after: ['LegacyoftheDragonborn.esm']
+
