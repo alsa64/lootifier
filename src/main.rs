@@ -72,7 +72,7 @@ fn load_lines_to_string_vector(input_file_path: &PathBuf) -> Vec<String> {
     let mut lines: Vec<String> = Vec::new();
     for line in input_file_buf.lines() {
         let line = line.expect("Unable to read line");
-        if line.starts_with("#") {
+        if line.starts_with('#') {
             continue;
         }
         lines.push(line);
