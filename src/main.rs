@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::io::prelude::*;
-use std::path::{Display, PathBuf};
+use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -14,6 +14,10 @@ struct Opt {
     /// Output file
     #[structopt(name = "Loot Userlist Output Path", short = "o", long = "output", default_value = "userlist.yaml", parse(from_os_str))]
     output: PathBuf,
+
+    /// Masterlist path, if specified the file will be cleared
+    #[structopt(name = "Loot Masterlist input Path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
+    masterlist_path: PathBuf,
 }
 
 fn main() {
@@ -22,9 +26,9 @@ fn main() {
     // input and output paths
     let loadorder_path = opt.input;
     let output_path = opt.output;
+    let masterlist_path = opt.masterlist_path;
 
     let plugins = load_lines_to_string_vector(&loadorder_path);
-    let output_display = output_path.display();
 
     let plugins_len = plugins.len();
 
@@ -42,11 +46,16 @@ fn main() {
     println!("{}", output_str);
 
     // write userlist.yaml to disk
-    write_string_to_file(&output_path, output_display, output_str)
+    write_string_to_file(&output_path, output_str);
+
+    if masterlist_path.to_str().expect("") != "" {
+        write_string_to_file(&masterlist_path, String::new());
+    }
 }
 
 /// Given an output path and a String, it will write it to that path as a file.
-fn write_string_to_file(output_path: &PathBuf, output_display: Display, output_str: String) {
+fn write_string_to_file(output_path: &PathBuf, output_str: String) {
+    let output_display = output_path.display();
     let mut file = match File::create(&output_path) {
         Err(why) => panic!("couldn't create {}: {}", output_display, why),
         Ok(file) => file,
