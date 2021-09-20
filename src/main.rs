@@ -2,13 +2,12 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::io::prelude::*;
 use std::path::PathBuf;
-
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "lootifier")]
 struct Opt {
-    /// Input Modorganizer Loadorder
+    /// Input ModOrganizer Loadorder
     #[structopt(name = "MO Loadorder Input Path", short = "i", long = "input", default_value = "loadorder.txt", parse(from_os_str))]
     input: PathBuf,
 
@@ -45,6 +44,7 @@ fn main() {
     // write userlist.yaml to disk
     write_string_to_file(&arguments.output, output_str);
 
+    // Check if the user specified a masterlist path, if so, write an empty file to that path
     if arguments.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
         write_string_to_file(&arguments.masterlist_path, String::new());
     }
