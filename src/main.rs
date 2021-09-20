@@ -1,14 +1,29 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::io::prelude::*;
-use std::path::{Display, Path};
+use std::path::{Display, PathBuf};
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+#[structopt(name = "lootifier")]
+struct Opt {
+    /// Input Modorganizer Loadorder
+    #[structopt(name = "MO Loadorder Input Path", short = "i", long = "input", default_value = "loadorder.txt", parse(from_os_str))]
+    input: PathBuf,
+
+    /// Output file
+    #[structopt(name = "Loot Userlist Output Path", short = "o", long = "output", default_value = "userlist.yaml", parse(from_os_str))]
+    output: PathBuf,
+}
 
 fn main() {
-    // input and output paths
-    let loadorder_path = Path::new("loadorder.txt");
-    let output_path = Path::new("userlist.yaml");
+    let opt = Opt::from_args();
 
-    let plugins = load_lines_to_string_vector(loadorder_path);
+    // input and output paths
+    let loadorder_path = opt.input;
+    let output_path = opt.output;
+
+    let plugins = load_lines_to_string_vector(&loadorder_path);
     let output_display = output_path.display();
 
     let plugins_len = plugins.len();
@@ -31,7 +46,7 @@ fn main() {
 }
 
 /// Given an output path and a String, it will write it to that path as a file.
-fn write_string_to_file(output_path: &&Path, output_display: Display, output_str: String) {
+fn write_string_to_file(output_path: &PathBuf, output_display: Display, output_str: String) {
     let mut file = match File::create(&output_path) {
         Err(why) => panic!("couldn't create {}: {}", output_display, why),
         Ok(file) => file,
@@ -45,7 +60,7 @@ fn write_string_to_file(output_path: &&Path, output_display: Display, output_str
 
 /// Loads input_file_path and returns it as a String vector, seperated by new lines.
 /// It ignores all lines that start with #
-fn load_lines_to_string_vector(input_file_path: &Path) -> Vec<String> {
+fn load_lines_to_string_vector(input_file_path: &PathBuf) -> Vec<String> {
     let input_file = File::open(input_file_path).expect("Unable to open file");
     let input_file_buf = BufReader::new(input_file);
     let mut lines: Vec<String> = Vec::new();
