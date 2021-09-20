@@ -32,3 +32,12 @@ OPTIONS:
     -o, --output <Loot Userlist Output Path>               Output file [default: userlist.yaml]
     -i, --input <MO Loadorder Input Path>                  Input ModOrganizer Loadorder [default: loadorder.txt]
 ```
+
+## Build instructions
+
+1. [Install Rust](https://www.rust-lang.org/learn/get-started)
+2. Open a Terminal in the repository folder.
+3. Run:
+```bash
+cargo build --release
+```
