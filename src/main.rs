@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::io::prelude::*;
 use std::path::PathBuf;
+
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -21,14 +22,10 @@ struct Opt {
 }
 
 fn main() {
-    let opt = Opt::from_args();
+    // collect CLI arguments
+    let arguments = Opt::from_args();
 
-    // input and output paths
-    let loadorder_path = opt.input;
-    let output_path = opt.output;
-    let masterlist_path = opt.masterlist_path;
-
-    let plugins = load_lines_to_string_vector(&loadorder_path);
+    let plugins = load_lines_to_string_vector(&arguments.input);
 
     let plugins_len = plugins.len();
 
@@ -46,10 +43,10 @@ fn main() {
     println!("{}", output_str);
 
     // write userlist.yaml to disk
-    write_string_to_file(&output_path, output_str);
+    write_string_to_file(&arguments.output, output_str);
 
-    if masterlist_path.to_str().expect("") != "" {
-        write_string_to_file(&masterlist_path, String::new());
+    if arguments.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
+        write_string_to_file(&arguments.masterlist_path, String::new());
     }
 }
 
