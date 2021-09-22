@@ -18,6 +18,10 @@ struct Opt {
     /// Masterlist path, if specified the file will be cleared
     #[structopt(name = "Loot Masterlist input Path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
     masterlist_path: PathBuf,
+
+    /// Use Plugin based Sorting instead of Group based sorting
+    #[structopt(name = "Use Plugin based sorting", short = "p", long = "plugin-sort")]
+    use_plugin_sort: bool,
 }
 
 fn main() {
@@ -26,12 +30,10 @@ fn main() {
 
     let plugins = load_lines_to_string_vector(&arguments.input);
 
-    let use_groups = true;
-
-    let output_string = if use_groups == true {
-        generate_group_based_rules(plugins)
-    } else {
+    let output_string = if arguments.use_plugin_sort == true {
         generate_plugin_based_rules(plugins)
+    } else {
+        generate_group_based_rules(plugins)
     };
 
     // print userlist.yaml to stdout
