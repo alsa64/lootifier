@@ -31,11 +31,11 @@ fn main() {
     // create userlist.yaml in memory as string
     let mut output_str = String::from("plugins:\n");
     for i in 1..plugins_len {
-        output_str.push_str("  - name '");
+        output_str.push_str("  - name: '");
         output_str.push_str(plugins[i].as_str());
-        output_str.push_str("'\n    after: ['");
+        output_str.push_str("'\n    after:\n      - '");
         output_str.push_str(plugins[i - 1].as_str());
-        output_str.push_str("']\n\n");
+        output_str.push_str("'\n\n");
     }
 
     // print userlist.yaml to stdout
