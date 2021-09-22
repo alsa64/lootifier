@@ -26,31 +26,35 @@ fn main() {
 
     let plugins = load_lines_to_string_vector(&arguments.input);
 
-    let plugins_len = plugins.len();
-    println!("{} Plugins", plugins_len);
-
-    // create userlist.yaml in memory as string
-    let mut output_str = String::from("groups:\n    - name: \'default\'\nplugins:");
-    for i in 1..plugins_len {
-        let i = plugins_len-i;
-        output_str.push_str("\n");
-        output_str.push_str("  - name: \'");
-        output_str.push_str(plugins[i].as_str());
-        output_str.push_str("\'\n    after:\n      - \'");
-        output_str.push_str(plugins[i-1].as_str());
-        output_str.push_str("\'");
-    }
+    let output_string = generate_plugin_based_rules(plugins);
 
     // print userlist.yaml to stdout
-    println!("{}", output_str);
+    println!("{}", output_string);
 
     // write userlist.yaml to disk
-    write_string_to_file(&arguments.output, output_str);
+    write_string_to_file(&arguments.output, output_string);
 
     // Check if the user specified a masterlist path, if so, write an empty file to that path
     if arguments.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
         write_string_to_file(&arguments.masterlist_path, String::new());
     }
+}
+
+fn generate_plugin_based_rules(plugins: Vec<String>) -> String {
+    let plugins_len = plugins.len();
+
+    // create userlist.yaml in memory as string
+    let mut output_str = String::from("groups:\n    - name: \'default\'\nplugins:");
+    for i in 1..plugins_len {
+        let i = plugins_len - i;
+        output_str.push_str("\n");
+        output_str.push_str("  - name: \'");
+        output_str.push_str(plugins[i].as_str());
+        output_str.push_str("\'\n    after:\n      - \'");
+        output_str.push_str(plugins[i - 1].as_str());
+        output_str.push_str("\'");
+    }
+    output_str
 }
 
 /// Given an output path and a String, it will write it to that path as a file.
