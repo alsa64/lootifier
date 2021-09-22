@@ -8,15 +8,15 @@ use structopt::StructOpt;
 #[structopt(name = "lootifier")]
 struct Opt {
     /// Input ModOrganizer Loadorder
-    #[structopt(name = "path", short = "i", long = "input", default_value = "loadorder.txt", parse(from_os_str))]
+    #[structopt(name = "input path", short = "i", long = "input", default_value = "loadorder.txt", parse(from_os_str))]
     input: PathBuf,
 
     /// Output file
-    #[structopt(name = "path", short = "o", long = "output", default_value = "userlist.yaml", parse(from_os_str))]
+    #[structopt(name = "output path", short = "o", long = "output", default_value = "userlist.yaml", parse(from_os_str))]
     output: PathBuf,
 
     /// Masterlist path, if specified the file will be cleared
-    #[structopt(name = "path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
+    #[structopt(name = "clear path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
     masterlist_path: PathBuf,
 
     /// Use Plugin based Sorting instead of Group based sorting
