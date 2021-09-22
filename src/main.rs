@@ -27,15 +27,18 @@ fn main() {
     let plugins = load_lines_to_string_vector(&arguments.input);
 
     let plugins_len = plugins.len();
+    println!("{} Plugins", plugins_len);
 
     // create userlist.yaml in memory as string
-    let mut output_str = String::from("plugins:\n");
+    let mut output_str = String::from("groups:\n    - name: \'default\'\nplugins:");
     for i in 1..plugins_len {
-        output_str.push_str("  - name: '");
+        let i = plugins_len-i;
+        output_str.push_str("\n");
+        output_str.push_str("  - name: \'");
         output_str.push_str(plugins[i].as_str());
-        output_str.push_str("'\n    after:\n      - '");
-        output_str.push_str(plugins[i - 1].as_str());
-        output_str.push_str("'\n\n");
+        output_str.push_str("\'\n    after:\n      - \'");
+        output_str.push_str(plugins[i-1].as_str());
+        output_str.push_str("\'");
     }
 
     // print userlist.yaml to stdout
@@ -54,12 +57,12 @@ fn main() {
 fn write_string_to_file(output_path: &PathBuf, output_str: String) {
     let output_display = output_path.display();
     let mut file = match File::create(&output_path) {
-        Err(why) => panic!("couldn't create {}: {}", output_display, why),
+        Err(why) => panic!("couldn\'t create {}: {}", output_display, why),
         Ok(file) => file,
     };
 
     match file.write_all(output_str.as_bytes()) {
-        Err(why) => panic!("couldn't write to {}: {}", output_display, why),
+        Err(why) => panic!("couldn\'t write to {}: {}", output_display, why),
         Ok(_) => println!("successfully wrote to {}", output_display),
     }
 }
@@ -72,6 +75,7 @@ fn load_lines_to_string_vector(input_file_path: &PathBuf) -> Vec<String> {
     let mut lines: Vec<String> = Vec::new();
     for line in input_file_buf.lines() {
         let line = line.expect("Unable to read line");
+        let line = line.replace("\'", "\'\'");
         if line.starts_with('#') {
             continue;
         }
