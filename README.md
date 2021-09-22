@@ -16,22 +16,21 @@ To use this tool, either put it in the current profile folder that has all plugi
 use the arguments outlined below to automatically read and write from the correct paths. 
 
 ```
-lootifier 1.0.0
+lootifier 1.1.0
 
 USAGE:
-    lootifier [OPTIONS]
+    lootifier.exe [FLAGS] [OPTIONS]
 
 FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
+    -p, --plugin-sort    Use Plugin based Sorting instead of Group based sorting
+    -h, --help           Prints help information
+    -V, --version        Prints version information
 
 OPTIONS:
-    -m, --masterlist-input <Loot Masterlist input Path>
-            Masterlist path, if specified the file will be cleared [default: ]
-
-    -o, --output <Loot Userlist Output Path>               Output file [default: userlist.yaml]
-    -i, --input <MO Loadorder Input Path>                  Input ModOrganizer Loadorder [default: loadorder.txt]
-```
+    -m, --masterlist-input <clear path>    Masterlist path, if specified the file will be cleared [default: ]
+    -i, --input <input path>               Input ModOrganizer Loadorder [default: loadorder.txt]
+    -o, --output <output path>             Output file [default: userlist.yaml]
+    ```
 
 ## Build instructions
 
