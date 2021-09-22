@@ -26,7 +26,13 @@ fn main() {
 
     let plugins = load_lines_to_string_vector(&arguments.input);
 
-    let output_string = generate_plugin_based_rules(plugins);
+    let use_groups = true;
+
+    let output_string = if use_groups == true {
+        generate_group_based_rules(plugins)
+    } else {
+        generate_plugin_based_rules(plugins)
+    };
 
     // print userlist.yaml to stdout
     println!("{}", output_string);
@@ -47,14 +53,40 @@ fn generate_plugin_based_rules(plugins: Vec<String>) -> String {
     let mut output_str = String::from("groups:\n    - name: \'default\'\nplugins:");
     for i in 1..plugins_len {
         let i = plugins_len - i;
-        output_str.push_str("\n");
-        output_str.push_str("  - name: \'");
-        output_str.push_str(plugins[i].as_str());
-        output_str.push_str("\'\n    after:\n      - \'");
-        output_str.push_str(plugins[i - 1].as_str());
-        output_str.push_str("\'");
+        let current_plugin = plugins[i].as_str();
+        let load_after_plugin = plugins[i - 1].as_str();
+        output_str.push_str(format!("\n").as_str());
+        output_str.push_str(format!("  - name: \'{}\'\n", current_plugin).as_str());
+        output_str.push_str(format!("    after:\n").as_str());
+        output_str.push_str(format!("      - \'{}\'", load_after_plugin).as_str());
     }
     output_str
+}
+
+fn generate_group_based_rules(plugins: Vec<String>) -> String {
+    let plugins_len = plugins.len();
+
+    let mut groups_str = String::from("groups:\n");
+    let mut plugins_str = String::from("plugins:");
+    let mut output = String::from("");
+    for i in 1..plugins_len {
+        let i = plugins_len - i;
+        let current_plugin = plugins[i].as_str();
+        let load_after_plugin = plugins[i - 1].as_str();
+
+        groups_str.push_str(format!("  - name: \'{}\'\n", current_plugin).as_str());
+        if load_after_plugin != "Skyrim.esm" {
+            groups_str.push_str(format!("    after:\n").as_str());
+            groups_str.push_str(format!("      - \'{}\'\n", load_after_plugin).as_str());
+        }
+
+        plugins_str.push_str(format!("\n").as_str());
+        plugins_str.push_str(format!("  - name: \'{}\'\n", current_plugin).as_str());
+        plugins_str.push_str(format!("    group: \'{}\'", current_plugin).as_str());
+    }
+    output.push_str(groups_str.as_str());
+    output.push_str(plugins_str.as_str());
+    output
 }
 
 /// Given an output path and a String, it will write it to that path as a file.
