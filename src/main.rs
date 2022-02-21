@@ -12,16 +12,21 @@ struct Opt {
     input: PathBuf,
 
     /// Output file
-    #[structopt(name = "output path", short = "o", long = "output", default_value = "userlist.yaml", parse(from_os_str))]
+    #[structopt(name = "output path", short = "o", long = "output", default_value = "", parse(from_os_str))]
     output: PathBuf,
 
     /// Masterlist path, if specified the file will be cleared
     #[structopt(name = "clear path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
     masterlist_path: PathBuf,
 
-    /// Use Plugin based Sorting instead of Group based sorting
+    /// Use Plugin based Sorting (LOOT)
     #[structopt(name = "bool", short = "p", long = "plugin-sort")]
     use_plugin_sort: bool,
+
+
+    /// Use Group based Sorting (LOOT)
+    #[structopt(name = "bool", short = "g, long = "group-sort")]
+    use_group_sort: bool,
 }
 
 fn main() {
@@ -30,11 +35,23 @@ fn main() {
 
     let plugins = load_lines_to_string_vector(&arguments.input);
 
-    let output_string = if arguments.use_plugin_sort == true {
+    let mut output_path_string = output;
+
+    let output_string = 
+    if arguments.use_plugin_sort == true {
+        if output_path_string == "" {
+            output_path_string = "userlist.yaml";
+        }
         generate_plugin_based_rules(plugins)
-    } else {
+    } else if arguments.use_group_sort == true {
+        if output_path_string == "" {
+            output_path_string = "userlist.yaml";
+        }
         generate_group_based_rules(plugins)
-    };
+    } else {
+        output_path_string = "Skyrim.ccc";
+        generate_skyrim_ccc(plugins)
+    }
 
     // print userlist.yaml to stdout
     println!("{}", output_string);
@@ -91,6 +108,16 @@ fn generate_group_based_rules(plugins: Vec<String>) -> String {
     output
 }
 
+fn generate_skyrim_ccc(plugins: Vec<String>) -> String {
+    let plugins_len = plugins.len();
+
+    let mut output_str = String::from("");
+    for i in 1..plugins_len {
+        output_str.push_str(format!("{}\n", plugins[i].as_str()).as_str());
+    }
+    output_str
+}
+
 /// Given an output path and a String, it will write it to that path as a file.
 fn write_string_to_file(output_path: &PathBuf, output_str: String) {
     let output_display = output_path.display();
@@ -121,3 +148,4 @@ fn load_lines_to_string_vector(input_file_path: &PathBuf) -> Vec<String> {
     }
     lines
 }
+
