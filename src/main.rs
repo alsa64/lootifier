@@ -30,20 +30,20 @@ struct Opt {
 }
 
 fn main() {
-    // collect CLI arguments
-    let arguments = Opt::from_args();
+    // collect CLI opts
+    let opt = Opt::from_args();
 
-    let plugins = load_lines_to_string_vector(&arguments.input);
+    let plugins = load_lines_to_string_vector(&opt.input);
 
     let mut output_path_string = output;
 
     let output_string = 
-    if arguments.use_plugin_sort == true {
+    if opt.use_plugin_sort == true {
         if output_path_string == "" {
             output_path_string = "userlist.yaml";
         }
         generate_plugin_based_rules(plugins)
-    } else if arguments.use_group_sort == true {
+    } else if opt.use_group_sort == true {
         if output_path_string == "" {
             output_path_string = "userlist.yaml";
         }
@@ -57,11 +57,11 @@ fn main() {
     println!("{}", output_string);
 
     // write userlist.yaml to disk
-    write_string_to_file(&arguments.output, output_string);
+    write_string_to_file(&opt.output, output_string);
 
     // Check if the user specified a masterlist path, if so, write an empty file to that path
-    if arguments.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
-        write_string_to_file(&arguments.masterlist_path, String::new());
+    if opt.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
+        write_string_to_file(&opt.masterlist_path, String::new());
     }
 }
 
