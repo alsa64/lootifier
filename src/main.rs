@@ -51,7 +51,7 @@ fn main() {
     } else {
         output_path_string = "Skyrim.ccc";
         generate_skyrim_ccc(plugins)
-    }
+    };
 
     // print userlist.yaml to stdout
     println!("{}", output_string);
