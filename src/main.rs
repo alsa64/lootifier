@@ -25,7 +25,7 @@ struct Opt {
 
 
     /// Use Group based Sorting (LOOT)
-    #[structopt(name = "bool", short = "g, long = "group-sort")]
+    #[structopt(name = "bool", short = "g", long = "group-sort")]
     use_group_sort: bool,
 }
 
