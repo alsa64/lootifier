@@ -1,6 +1,6 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader};
 use std::io::prelude::*;
+use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -8,15 +8,33 @@ use structopt::StructOpt;
 #[structopt(name = "lootifier")]
 struct Opt {
     /// Input ModOrganizer Loadorder
-    #[structopt(name = "input path", short = "i", long = "input", default_value = "loadorder.txt", parse(from_os_str))]
+    #[structopt(
+        name = "input path",
+        short = "i",
+        long = "input",
+        default_value = "loadorder.txt",
+        parse(from_os_str)
+    )]
     input: PathBuf,
 
     /// Output file
-    #[structopt(name = "output path", short = "o", long = "output", default_value = "userlist.yaml", parse(from_os_str))]
+    #[structopt(
+        name = "output path",
+        short = "o",
+        long = "output",
+        default_value = "userlist.yaml",
+        parse(from_os_str)
+    )]
     output: PathBuf,
 
     /// Masterlist path, if specified the file will be cleared
-    #[structopt(name = "clear path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
+    #[structopt(
+        name = "clear path",
+        short = "m",
+        long = "masterlist-input",
+        default_value = "",
+        parse(from_os_str)
+    )]
     masterlist_path: PathBuf,
 }
 
@@ -45,7 +63,10 @@ fn trim_whitespaces(lines: Vec<String>) -> Vec<String> {
 fn remove_empty_and_comments(lines: Vec<String>) -> Vec<String> {
     let mut trimmed_lines = Vec::new();
     for line in lines {
-        if line.len() > 0 && line.chars().nth(0).unwrap() != '#' && line.chars().nth(0).unwrap() != '/' {
+        if line.len() > 0
+            && line.chars().nth(0).unwrap() != '#'
+            && line.chars().nth(0).unwrap() != '/'
+        {
             trimmed_lines.push(line);
         }
     }
@@ -77,7 +98,8 @@ fn escape_string(string: &str) -> String {
 /// function that writes a string to a file
 fn write_string_to_file(string: String, path: &PathBuf) {
     let mut file = File::create(path).expect("File not found");
-    file.write_all(string.as_bytes()).expect("Could not write to file");
+    file.write_all(string.as_bytes())
+        .expect("Could not write to file");
 }
 
 /// function that given an array of strings combines them into a single string
@@ -97,9 +119,9 @@ fn generate_rules(plugins: &Vec<String>) -> String {
         escaped_plugins.push(escape_string(&plugin));
     }
 
-    let mut loot_groups_rules :Vec<String> = Vec::new();
-    let mut loot_plugin_rules :Vec<String> = Vec::new();
-    
+    let mut loot_groups_rules: Vec<String> = Vec::new();
+    let mut loot_plugin_rules: Vec<String> = Vec::new();
+
     loot_groups_rules.push("groups:\n".to_string());
     loot_plugin_rules.push("plugins:\n".to_string());
 
@@ -151,8 +173,8 @@ fn generate_rules(plugins: &Vec<String>) -> String {
 
     // combine the rules into a single String
     format!("{}\n{}", loot_groups_rules_string, loot_plugin_rules_string).to_string()
-    
 }
+
 fn main() {
     // collect CLI arguments
     let arguments = Opt::from_args();
@@ -168,7 +190,12 @@ fn main() {
     write_string_to_file(output_string, &arguments.output);
 
     // Check if the user specified a masterlist path, if so, write an empty file to that path
-    if arguments.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
+    if arguments
+        .masterlist_path
+        .to_str()
+        .expect("Could not convert masterlist_path to type str")
+        != ""
+    {
         write_string_to_file("".to_string(), &arguments.masterlist_path);
     }
 }
