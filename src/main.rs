@@ -18,106 +18,157 @@ struct Opt {
     /// Masterlist path, if specified the file will be cleared
     #[structopt(name = "clear path", short = "m", long = "masterlist-input", default_value = "", parse(from_os_str))]
     masterlist_path: PathBuf,
-
-    /// Use Plugin based Sorting instead of Group based sorting
-    #[structopt(name = "bool", short = "p", long = "plugin-sort")]
-    use_plugin_sort: bool,
 }
 
+/// function that reads a file and returns a vector of strings
+/// each string is a line in the file
+fn read_file(path: &PathBuf) -> Vec<String> {
+    let file = File::open(path).expect("File not found");
+    let reader = BufReader::new(file);
+    let mut lines = Vec::new();
+    for line in reader.lines() {
+        lines.push(line.unwrap());
+    }
+    lines
+}
+
+/// function that reads a vector of strings and trimms whitespaces from each string at the beginning and the end or each line
+fn trim_whitespaces(lines: Vec<String>) -> Vec<String> {
+    let mut trimmed_lines = Vec::new();
+    for line in lines {
+        trimmed_lines.push(line.trim().to_string());
+    }
+    trimmed_lines
+}
+
+/// function that reads a vector of strings and removes all empty strings from the vector as well as strings starting with # or //
+fn remove_empty_and_comments(lines: Vec<String>) -> Vec<String> {
+    let mut trimmed_lines = Vec::new();
+    for line in lines {
+        if line.len() > 0 && line.chars().nth(0).unwrap() != '#' && line.chars().nth(0).unwrap() != '/' {
+            trimmed_lines.push(line);
+        }
+    }
+    trimmed_lines
+}
+
+/// function that reads a text file to a vector of strings, removing empty strings and comments and trimming whitespaces from each string
+fn read_file_to_vector(path: &PathBuf) -> Vec<String> {
+    let lines = read_file(path);
+    let trimmed_lines = trim_whitespaces(lines);
+    let trimmed_and_empty_lines = remove_empty_and_comments(trimmed_lines);
+    trimmed_and_empty_lines
+}
+
+/// function that given a string escapes it for yaml
+/// for example ' -> ''
+fn escape_string(string: &str) -> String {
+    let mut escaped_string = String::new();
+    for c in string.chars() {
+        if c == '\'' {
+            escaped_string.push_str("''");
+        } else {
+            escaped_string.push(c);
+        }
+    }
+    escaped_string
+}
+
+/// function that writes a string to a file
+fn write_string_to_file(string: String, path: &PathBuf) {
+    let mut file = File::create(path).expect("File not found");
+    file.write_all(string.as_bytes()).expect("Could not write to file");
+}
+
+/// function that given an array of strings combines them into a single string
+fn combine_strings(lines: Vec<String>) -> String {
+    let mut combined_string = String::new();
+    for line in lines {
+        combined_string.push_str(&line);
+    }
+    combined_string
+}
+
+/// function that generates plugin sorting rules for LOOT in yaml syntax
+fn generate_rules(plugins: &Vec<String>) -> String {
+    // escape all plugins
+    let mut escaped_plugins = Vec::new();
+    for plugin in plugins {
+        escaped_plugins.push(escape_string(&plugin));
+    }
+
+    let mut loot_groups_rules :Vec<String> = Vec::new();
+    let mut loot_plugin_rules :Vec<String> = Vec::new();
+    
+    loot_groups_rules.push("groups:\n".to_string());
+    loot_plugin_rules.push("plugins:\n".to_string());
+
+    // interate though all plugins and create loot groups and loot plugin rules
+    // current plugin is the plugin that is currently being processed
+    // load after plugin is the plugin that is loaded before the current plugin
+    // in the very first run, load after plugin doesn't exist, so no rule get's created for it
+    // examples:
+    // plugins:
+    // ```
+    // Skyrim.esm
+    // Update.esm
+    // Dawnguard.esm
+    // ```
+    // group rules:
+    // ```
+    //   - name: 'Skyrim.esm'
+    //   - name: 'Update.esm'
+    //     after: 'Skyrim.esm'
+    //   - name: 'Dawnguard.esm'
+    //     after: 'Update.esm'
+    // ```
+    // plugin rules:
+    // ```
+    //   - name: 'Skyrim.esm'
+    //     group: 'Skyrim.esm'
+    //   - name: 'Update.esm'
+    //     group: 'Update.esm'
+    //   - name: 'Dawnguard.esm'
+    //     group: 'Dawnguard.esm'
+    //```
+    for (current_plugin_index, current_plugin) in escaped_plugins.iter().enumerate() {
+        let load_after_plugin = if current_plugin_index > 0 {
+            escaped_plugins.get(current_plugin_index - 1).unwrap()
+        } else {
+            ""
+        };
+        loot_groups_rules.push(format!("  - name: '{}'\n", current_plugin));
+        if load_after_plugin != "" {
+            loot_groups_rules.push(format!("    after: '{}'\n", load_after_plugin));
+        }
+        loot_plugin_rules.push(format!("  - name: '{}'\n", current_plugin));
+        loot_plugin_rules.push(format!("    group: '{}'\n", current_plugin));
+    }
+
+    // combine the rules into a single String
+    let loot_groups_rules_string = combine_strings(loot_groups_rules);
+    let loot_plugin_rules_string = combine_strings(loot_plugin_rules);
+
+    // combine the rules into a single String
+    format!("{}\n{}", loot_groups_rules_string, loot_plugin_rules_string).to_string()
+    
+}
 fn main() {
     // collect CLI arguments
     let arguments = Opt::from_args();
 
-    let plugins = load_lines_to_string_vector(&arguments.input);
+    let plugins = read_file_to_vector(&arguments.input);
 
-    let output_string = if arguments.use_plugin_sort == true {
-        generate_plugin_based_rules(plugins)
-    } else {
-        generate_group_based_rules(plugins)
-    };
+    let output_string = generate_rules(&plugins);
 
     // print userlist.yaml to stdout
     println!("{}", output_string);
 
-    // write userlist.yaml to disk
-    write_string_to_file(&arguments.output, output_string);
+    // write userlist.yaml to file
+    write_string_to_file(output_string, &arguments.output);
 
     // Check if the user specified a masterlist path, if so, write an empty file to that path
     if arguments.masterlist_path.to_str().expect("Could not convert masterlist_path to type str") != "" {
-        write_string_to_file(&arguments.masterlist_path, String::new());
+        write_string_to_file("".to_string(), &arguments.masterlist_path);
     }
-}
-
-fn generate_plugin_based_rules(plugins: Vec<String>) -> String {
-    let plugins_len = plugins.len();
-
-    // create userlist.yaml in memory as string
-    let mut output_str = String::from("groups:\n    - name: \'default\'\nplugins:");
-    for i in 1..plugins_len {
-        let i = plugins_len - i;
-        let current_plugin = plugins[i].as_str();
-        let load_after_plugin = plugins[i - 1].as_str();
-        output_str.push_str(format!("\n").as_str());
-        output_str.push_str(format!("  - name: \'{}\'\n", current_plugin).as_str());
-        output_str.push_str(format!("    after:\n").as_str());
-        output_str.push_str(format!("      - \'{}\'", load_after_plugin).as_str());
-    }
-    output_str
-}
-
-fn generate_group_based_rules(plugins: Vec<String>) -> String {
-    let plugins_len = plugins.len();
-
-    let mut groups_str = String::from("groups:\n");
-    let mut plugins_str = String::from("plugins:");
-    let mut output = String::from("");
-    for i in 1..plugins_len {
-        let i = plugins_len - i;
-        let current_plugin = plugins[i].as_str();
-        let load_after_plugin = plugins[i - 1].as_str();
-
-        groups_str.push_str(format!("  - name: \'{}\'\n", current_plugin).as_str());
-        if load_after_plugin != "Skyrim.esm" {
-            groups_str.push_str(format!("    after:\n").as_str());
-            groups_str.push_str(format!("      - \'{}\'\n", load_after_plugin).as_str());
-        }
-
-        plugins_str.push_str(format!("\n").as_str());
-        plugins_str.push_str(format!("  - name: \'{}\'\n", current_plugin).as_str());
-        plugins_str.push_str(format!("    group: \'{}\'", current_plugin).as_str());
-    }
-    output.push_str(groups_str.as_str());
-    output.push_str(plugins_str.as_str());
-    output
-}
-
-/// Given an output path and a String, it will write it to that path as a file.
-fn write_string_to_file(output_path: &PathBuf, output_str: String) {
-    let output_display = output_path.display();
-    let mut file = match File::create(&output_path) {
-        Err(why) => panic!("couldn\'t create {}: {}", output_display, why),
-        Ok(file) => file,
-    };
-
-    match file.write_all(output_str.as_bytes()) {
-        Err(why) => panic!("couldn\'t write to {}: {}", output_display, why),
-        Ok(_) => println!("successfully wrote to {}", output_display),
-    }
-}
-
-/// Loads input_file_path and returns it as a String vector, seperated by new lines.
-/// It ignores all lines that start with #
-fn load_lines_to_string_vector(input_file_path: &PathBuf) -> Vec<String> {
-    let input_file = File::open(input_file_path).expect("Unable to open file");
-    let input_file_buf = BufReader::new(input_file);
-    let mut lines: Vec<String> = Vec::new();
-    for line in input_file_buf.lines() {
-        let line = line.expect("Unable to read line");
-        let line = line.replace("\'", "\'\'");
-        if line.starts_with('#') {
-            continue;
-        }
-        lines.push(line);
-    }
-    lines
 }
