@@ -63,9 +63,9 @@ fn trim_whitespaces(lines: Vec<String>) -> Vec<String> {
 fn remove_empty_and_comments(lines: Vec<String>) -> Vec<String> {
     let mut trimmed_lines = Vec::new();
     for line in lines {
-        if line.len() > 0
-            && line.chars().nth(0).unwrap() != '#'
-            && line.chars().nth(0).unwrap() != '/'
+        if !line.is_empty()
+            && !line.starts_with('#')
+            && !line.starts_with('/')
         {
             trimmed_lines.push(line);
         }
@@ -77,8 +77,7 @@ fn remove_empty_and_comments(lines: Vec<String>) -> Vec<String> {
 fn read_file_to_vector(path: &PathBuf) -> Vec<String> {
     let lines = read_file(path);
     let trimmed_lines = trim_whitespaces(lines);
-    let trimmed_and_empty_lines = remove_empty_and_comments(trimmed_lines);
-    trimmed_and_empty_lines
+    remove_empty_and_comments(trimmed_lines)
 }
 
 /// function that given a string escapes it for yaml
@@ -116,7 +115,7 @@ fn generate_rules(plugins: &Vec<String>) -> String {
     // escape all plugins
     let mut escaped_plugins = Vec::new();
     for plugin in plugins {
-        escaped_plugins.push(escape_string(&plugin));
+        escaped_plugins.push(escape_string(plugin));
     }
 
     let mut loot_groups_rules: Vec<String> = Vec::new();
@@ -160,7 +159,7 @@ fn generate_rules(plugins: &Vec<String>) -> String {
             ""
         };
         loot_groups_rules.push(format!("  - name: '{}'\n", current_plugin));
-        if load_after_plugin != "" {
+        if !load_after_plugin.is_empty() {
             loot_groups_rules.push(format!("    after: '{}'\n", load_after_plugin));
         }
         loot_plugin_rules.push(format!("  - name: '{}'\n", current_plugin));
@@ -172,7 +171,7 @@ fn generate_rules(plugins: &Vec<String>) -> String {
     let loot_plugin_rules_string = combine_strings(loot_plugin_rules);
 
     // combine the rules into a single String
-    format!("{}\n{}", loot_groups_rules_string, loot_plugin_rules_string).to_string()
+    format!("{}\n{}", loot_groups_rules_string, loot_plugin_rules_string)
 }
 
 fn main() {
