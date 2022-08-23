@@ -1,22 +1,38 @@
+groups:
+  - name: 'Skyrim.esm'
+  - name: 'Update.esm'
+    after: 'Skyrim.esm'
+  - name: 'Dawnguard.esm'
+    after: 'Update.esm'
+  - name: 'HearthFires.esm'
+    after: 'Dawnguard.esm'
+  - name: 'Dragonborn.esm'
+    after: 'HearthFires.esm'
+  - name: 'Lanterns Of Skyrim II.esm'
+    after: 'Dragonborn.esm'
+  - name: 'LegacyoftheDragonborn.esm'
+    after: 'Lanterns Of Skyrim II.esm'
+  - name: 'DynDOLOD.esm'
+    after: 'LegacyoftheDragonborn.esm'
+  - name: 'Last'' Plugin with ''''''.esm'
+    after: 'DynDOLOD.esm'
+
 plugins:
-  - name 'Update.esm'
-    after: ['Skyrim.esm']
-
-  - name 'Dawnguard.esm'
-        after: ['Update.esm']
-
-  - name 'HearthFires.esm'
-        after: ['Dawnguard.esm']
-
-  - name 'Dragonborn.esm'
-        after: ['HearthFires.esm']
-
-  - name 'Lanterns Of Skyrim II.esm'
-        after: ['Dragonborn.esm']
-
-  - name 'LegacyoftheDragonborn.esm'
-        after: ['Lanterns Of Skyrim II.esm']
-
-  - name 'DynDOLOD.esm'
-        after: ['LegacyoftheDragonborn.esm']
-
+  - name: 'Skyrim.esm'
+    group: 'Skyrim.esm'
+  - name: 'Update.esm'
+    group: 'Update.esm'
+  - name: 'Dawnguard.esm'
+    group: 'Dawnguard.esm'
+  - name: 'HearthFires.esm'
+    group: 'HearthFires.esm'
+  - name: 'Dragonborn.esm'
+    group: 'Dragonborn.esm'
+  - name: 'Lanterns Of Skyrim II.esm'
+    group: 'Lanterns Of Skyrim II.esm'
+  - name: 'LegacyoftheDragonborn.esm'
+    group: 'LegacyoftheDragonborn.esm'
+  - name: 'DynDOLOD.esm'
+    group: 'DynDOLOD.esm'
+  - name: 'Last'' Plugin with ''''''.esm'
+    group: 'Last'' Plugin with ''''''.esm'
