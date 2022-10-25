@@ -175,8 +175,8 @@ fn generate_rules(plugins: &Vec<String>) -> String {
 }
 
 fn main() {
-    // collect CLI opts
-    let opt = Opt::from_args();
+    // collect CLI arguments
+    let arguments = Opt::from_args();
 
     let plugins = read_file_to_vector(&arguments.input);
 
