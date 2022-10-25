@@ -1,8 +1,8 @@
+use clap::Parser;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
-use clap::Parser;
 
 #[derive(Parser, Debug)]
 #[clap(name = "lootifier")]
@@ -12,7 +12,7 @@ struct Opt {
         name = "input path",
         short = 'i',
         long = "input",
-        default_value = "loadorder.txt",
+        default_value = "loadorder.txt"
     )]
     input: PathBuf,
 
@@ -21,7 +21,7 @@ struct Opt {
         name = "output path",
         short = 'o',
         long = "output",
-        default_value = "userlist.yaml",
+        default_value = "userlist.yaml"
     )]
     output: PathBuf,
 
@@ -30,7 +30,7 @@ struct Opt {
         name = "clear path",
         short = 'm',
         long = "masterlist-input",
-        default_value = "masterlist.yaml",
+        default_value = "masterlist.yaml"
     )]
     masterlist_path: PathBuf,
 }
@@ -60,10 +60,7 @@ fn trim_whitespaces(lines: Vec<String>) -> Vec<String> {
 fn remove_empty_and_comments(lines: Vec<String>) -> Vec<String> {
     let mut trimmed_lines = Vec::new();
     for line in lines {
-        if !line.is_empty()
-            && !line.starts_with('#')
-            && !line.starts_with('/')
-        {
+        if !line.is_empty() && !line.starts_with('#') && !line.starts_with('/') {
             trimmed_lines.push(line);
         }
     }
