@@ -30,7 +30,7 @@ struct Opt {
         name = "clear path",
         short = 'm',
         long = "masterlist-input",
-        default_value = "",
+        default_value = "masterlist.yaml",
     )]
     masterlist_path: PathBuf,
 }
