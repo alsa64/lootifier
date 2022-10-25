@@ -2,38 +2,35 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
-use structopt::StructOpt;
+use clap::Parser;
 
-#[derive(StructOpt, Debug)]
-#[structopt(name = "lootifier")]
+#[derive(Parser, Debug)]
+#[clap(name = "lootifier")]
 struct Opt {
     /// Input ModOrganizer Loadorder
-    #[structopt(
+    #[clap(
         name = "input path",
-        short = "i",
+        short = 'i',
         long = "input",
         default_value = "loadorder.txt",
-        parse(from_os_str)
     )]
     input: PathBuf,
 
     /// Output file
-    #[structopt(
+    #[clap(
         name = "output path",
-        short = "o",
+        short = 'o',
         long = "output",
         default_value = "userlist.yaml",
-        parse(from_os_str)
     )]
     output: PathBuf,
 
     /// Masterlist path, if specified the file will be cleared
-    #[structopt(
+    #[clap(
         name = "clear path",
-        short = "m",
+        short = 'm',
         long = "masterlist-input",
         default_value = "",
-        parse(from_os_str)
     )]
     masterlist_path: PathBuf,
 }
@@ -176,7 +173,7 @@ fn generate_rules(plugins: &Vec<String>) -> String {
 
 fn main() {
     // collect CLI arguments
-    let arguments = Opt::from_args();
+    let arguments = Opt::parse();
 
     let plugins = read_file_to_vector(&arguments.input);
 
