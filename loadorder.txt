@@ -7,3 +7,4 @@ Dragonborn.esm
 Lanterns Of Skyrim II.esm
 LegacyoftheDragonborn.esm
 DynDOLOD.esm
+Last' Plugin with '''.esm
