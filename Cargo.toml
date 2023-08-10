@@ -1,6 +1,6 @@
 [package]
 name = "lootifier"
-version = "2.0.0"
+version = "3.0.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,3 +9,7 @@ edition = "2021"
 clap = { version = "4.3", features = ["derive"] }
 serde_yaml = "0.9"
 serde = { version = "1.0", features = ["derive"] }
+
+[[bin]]
+name = "lootifier"
+path = "src/bin/main.rs"
