@@ -1,4 +1,5 @@
 use serde_yaml::to_string as to_yaml_string;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, prelude::*, BufReader};
@@ -93,7 +94,8 @@ impl Lootifier {
         let loot_groups_rules = Self::generate_group_rules(&escaped_plugins);
         let loot_plugin_rules = Self::generate_plugin_rules(&escaped_plugins);
 
-        let mut rules_map = HashMap::new();
+        // not using a HashMap for rules_map to guarantee the order of plugins and groups
+        let mut rules_map: BTreeMap<&str, &Vec<LootRule>> = BTreeMap::new();
         rules_map.insert("groups", &loot_groups_rules);
         rules_map.insert("plugins", &loot_plugin_rules);
 
