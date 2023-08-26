@@ -1,7 +1,9 @@
 use clap::Parser;
-use lootifier::file_util;
+// use lootifier::file_util;
 use lootifier::Lootifier;
 use std::path::PathBuf;
+
+mod file_util;
 
 #[derive(Parser, Debug)]
 #[clap(name = "lootifier")]
