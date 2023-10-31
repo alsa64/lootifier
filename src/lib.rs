@@ -1,7 +1,8 @@
-use serde_yaml::to_string as to_yaml_string;
 use std::collections::BTreeMap;
 use std::io::{self};
 use std::path::Path;
+
+use serde_yaml::to_string as to_yaml_string;
 
 mod file_util;
 
@@ -140,7 +141,7 @@ plugins:
 - name: Last'' Plugin with ''''''.esm
   group: Last'' Plugin with ''''''.esm
 "#
-        .trim();
+            .trim();
 
         let lootifier = Lootifier::from_string(&input_str).unwrap();
         let result = lootifier.generate_rules().unwrap();

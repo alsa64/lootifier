@@ -1,7 +1,9 @@
+use std::path::PathBuf;
+
 use clap::Parser;
+
 // use lootifier::file_util;
 use lootifier::Lootifier;
-use std::path::PathBuf;
 
 mod file_util;
 
@@ -10,28 +12,28 @@ mod file_util;
 struct Opt {
     /// Input ModOrganizer Loadorder
     #[clap(
-        name = "input path",
-        short = 'i',
-        long = "input",
-        default_value = "loadorder.txt"
+    name = "input path",
+    short = 'i',
+    long = "input",
+    default_value = "loadorder.txt"
     )]
     input: PathBuf,
 
     /// Output file
     #[clap(
-        name = "output path",
-        short = 'o',
-        long = "output",
-        default_value = "userlist.yaml"
+    name = "output path",
+    short = 'o',
+    long = "output",
+    default_value = "userlist.yaml"
     )]
     output: PathBuf,
 
     /// Masterlist path, if specified the file will be cleared
     #[clap(
-        name = "clear path",
-        short = 'm',
-        long = "masterlist-input",
-        default_value = "masterlist.yaml"
+    name = "clear path",
+    short = 'm',
+    long = "masterlist-input",
+    default_value = "masterlist.yaml"
     )]
     masterlist_path: PathBuf,
 }
