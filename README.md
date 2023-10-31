@@ -30,7 +30,7 @@ OPTIONS:
     -m, --masterlist-input <clear path>    Masterlist path, if specified the file will be cleared [default: ]
     -i, --input <input path>               Input ModOrganizer Loadorder [default: loadorder.txt]
     -o, --output <output path>             Output file [default: userlist.yaml]
-    ```
+```
 
 ## Build instructions
 
