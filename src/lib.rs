@@ -70,7 +70,7 @@ impl Lootifier {
         rules_map.insert("plugins", &loot_plugin_rules);
 
         to_yaml_string(&rules_map)
-            .map_err(|err| io::Error::new(io::ErrorKind::Other, err.to_string()))
+            .map_err(|err| io::Error::other(err.to_string()))
     }
 }
 
@@ -143,7 +143,7 @@ plugins:
 "#
             .trim();
 
-        let lootifier = Lootifier::from_string(&input_str).unwrap();
+        let lootifier = Lootifier::from_string(input_str).unwrap();
         let result = lootifier.generate_rules().unwrap();
 
         assert_eq!(result, expected_output_str);
