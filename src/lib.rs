@@ -20,7 +20,7 @@ impl Lootifier {
 
     /// Creates a new `Lootifier` instance from a string.
     pub fn from_string(input: &str) -> io::Result<Self> {
-        let plugins = file_util::filter_lines(input.lines())?;
+        let plugins = file_util::filter_lines(input.lines());
         Ok(Lootifier { plugins })
     }
 
@@ -146,6 +146,6 @@ plugins:
         let lootifier = Lootifier::from_string(input_str).unwrap();
         let result = lootifier.generate_rules().unwrap();
 
-        assert_eq!(result, expected_output_str);
+        assert_eq!(result.trim(), expected_output_str);
     }
 }

@@ -10,7 +10,7 @@ mod file_util;
 #[derive(Parser, Debug)]
 #[clap(name = "lootifier")]
 struct Opt {
-    /// Input ModOrganizer Loadorder
+    /// Input `ModOrganizer` Loadorder
     #[clap(
     name = "input path",
     short = 'i',
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let output_string = lootifier.generate_rules()?;
 
     // 4. Print the generated rules to the console.
-    println!("{}", output_string);
+    println!("{output_string}");
 
     // 5. Save the generated rules to the specified output file.
     file_util::write_string_to_file(&output_string, &arguments.output)?;
